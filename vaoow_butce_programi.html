@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Vaoow Bütçe">
+<meta name="theme-color" content="#993556">
+<title>Vaoow Bütçe Programı</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; 
+    margin: 0; 
+    padding: 0;
+    background: linear-gradient(135deg, #FBEAF0 0%, #F4C0D1 100%);
+    min-height: 100vh;
+    color: #2C2C2A;
+  }
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 16px;
+    padding-bottom: 80px;
+  }
+  .header {
+    background: #993556;
+    color: #FBEAF0;
+    padding: 16px 20px;
+    border-radius: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 20px rgba(153, 53, 86, 0.2);
+  }
+  .brand {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand-dot {
+    width: 10px;
+    height: 10px;
+    background: #F4C0D1;
+    border-radius: 50%;
+    box-shadow: 0 0 12px #F4C0D1;
+  }
+  .sub {
+    font-size: 12px;
+    opacity: 0.85;
+    margin-top: 4px;
+  }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid #F4C0D1;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: #888780;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+  }
+  .stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2C2C2A;
+  }
+  .stat-value.danger { color: #A32D2D; }
+  .stat-value.success { color: #0F6E56; }
+  .stat-value.warning { color: #BA7517; }
+
+  .tabs {
+    display: flex;
+    background: white;
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tab {
+    flex: 1;
+    padding: 10px 8px;
+    background: transparent;
+    border: none;
+    font-size: 13px;
+    cursor: pointer;
+    color: #888780;
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-weight: 500;
+    min-width: 80px;
+    text-align: center;
+    font-family: inherit;
+  }
+  .tab.active {
+    background: #993556;
+    color: white;
+  }
+  .tab-icon {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 2px;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .form-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    margin-bottom: 12px;
+  }
+  .form-row {
+    margin-bottom: 12px;
+  }
+  .form-row label {
+    display: block;
+    font-size: 12px;
+    color: #5F5E5A;
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .form-row input, .form-row select, .form-row textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #D3D1C7;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    background: white;
+    color: #2C2C2A;
+  }
+  .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+    outline: none;
+    border-color: #993556;
+    box-shadow: 0 0 0 3px rgba(153, 53, 86, 0.1);
+  }
+
+  .btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+    border: none;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: #993556;
+    color: white;
+  }
+  .btn-primary:hover { background: #72243E; }
+  .btn-secondary {
+    background: white;
+    color: #5F5E5A;
+    border: 1px solid #D3D1C7;
+  }
+  .btn-secondary:hover { background: #F1EFE8; }
+  .btn-danger {
+    background: white;
+    color: #A32D2D;
+    border: 1px solid #F09595;
+  }
+  .btn-danger:hover { background: #FCEBEB; }
+
+  .form-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .filter-bar select, .filter-bar input {
+    flex: 1;
+    min-width: 100px;
+    padding: 8px 10px;
+    border: 1px solid #D3D1C7;
+    border-radius: 8px;
+    font-size: 13px;
+    background: white;
+    font-family: inherit;
+  }
+
+  .expense-card {
+    background: white;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border-left: 4px solid #D3D1C7;
+    transition: all 0.2s;
+  }
+  .expense-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  .expense-card.paid { border-left-color: #0F6E56; }
+  .expense-card.pending { border-left-color: #BA7517; }
+  .expense-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+    gap: 8px;
+  }
+  .expense-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2C2C2A;
+    flex: 1;
+  }
+  .expense-amount {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2C2C2A;
+    white-space: nowrap;
+  }
+  .expense-meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 11px;
+    color: #888780;
+    margin-bottom: 8px;
+  }
+  .expense-note {
+    font-size: 12px;
+    color: #5F5E5A;
+    background: #F1EFE8;
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+  .expense-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .icon-btn {
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    border: 1px solid #D3D1C7;
+    background: white;
+    color: #5F5E5A;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .icon-btn:hover { background: #F1EFE8; }
+  .icon-btn.danger { color: #A32D2D; border-color: #F09595; }
+  .icon-btn.danger:hover { background: #FCEBEB; }
+  .icon-btn.success { color: #0F6E56; border-color: #5DCAA5; }
+  .icon-btn.success:hover { background: #E1F5EE; }
+
+  .pill {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .pill-paid { background: #E1F5EE; color: #04342C; }
+  .pill-pending { background: #FAEEDA; color: #412402; }
+  .pill-mobilya { background: #FBEAF0; color: #4B1528; }
+  .pill-elektrik { background: #FAEEDA; color: #412402; }
+  .pill-boya { background: #E1F5EE; color: #04342C; }
+  .pill-kira { background: #E6F1FB; color: #042C53; }
+  .pill-vergi { background: #F1EFE8; color: #2C2C2A; }
+  .pill-pos { background: #EEEDFE; color: #26215C; }
+  .pill-kamera { background: #FCEBEB; color: #501313; }
+  .pill-reklam { background: #FAECE7; color: #4A1B0C; }
+  .pill-dekor { background: #EAF3DE; color: #173404; }
+  .pill-stok { background: #FBEAF0; color: #4B1528; }
+  .pill-diger { background: #F1EFE8; color: #444441; }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #888780;
+  }
+  .empty-state .emoji { font-size: 40px; margin-bottom: 12px; }
+
+  .warning {
+    background: #FCEBEB;
+    border-left: 4px solid #A32D2D;
+    padding: 12px 14px;
+    border-radius: 8px;
+    color: #501313;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  .info {
+    background: #E6F1FB;
+    border-left: 4px solid #185FA5;
+    padding: 12px 14px;
+    border-radius: 8px;
+    color: #042C53;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+
+  .category-card {
+    background: white;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+  .category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .category-name {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .category-total {
+    font-size: 16px;
+    font-weight: 700;
+    color: #993556;
+  }
+  .category-detail {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #5F5E5A;
+    padding: 4px 0;
+  }
+  .progress-bar {
+    height: 6px;
+    background: #F1EFE8;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #D4537E, #993556);
+    border-radius: 3px;
+    transition: width 0.5s;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 16px;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #F1EFE8;
+  }
+  .modal-title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .modal-close {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #888780;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-close:hover { background: #F1EFE8; }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2C2C2A;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 24px;
+    font-size: 13px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 200;
+    max-width: 90%;
+    text-align: center;
+  }
+  .toast.show { opacity: 1; }
+
+  .footer-info {
+    background: rgba(255, 255, 255, 0.6);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    color: #5F5E5A;
+    text-align: center;
+    margin-top: 16px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 480px) {
+    .stat-value { font-size: 16px; }
+    .brand { font-size: 18px; }
+    .container { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="brand"><span class="brand-dot"></span>VAOOW · Bütçe</div>
+    <div class="sub" id="last-update">Yükleniyor...</div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Can simidi</div>
+      <div class="stat-value" id="stat-budget">450.000 ₺</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Harcanan</div>
+      <div class="stat-value danger" id="stat-spent">0 ₺</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Bekleyen</div>
+      <div class="stat-value warning" id="stat-pending">0 ₺</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Tampon</div>
+      <div class="stat-value success" id="stat-buffer">0 ₺</div>
+    </div>
+  </div>
+
+  <div id="warning-area"></div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="liste"><span class="tab-icon">📋</span>Liste</button>
+    <button class="tab" data-tab="ekle"><span class="tab-icon">➕</span>Ekle</button>
+    <button class="tab" data-tab="ozet"><span class="tab-icon">📊</span>Özet</button>
+    <button class="tab" data-tab="ayar"><span class="tab-icon">⚙️</span>Ayar</button>
+  </div>
+
+  <div class="panel active" id="panel-liste">
+    <div class="filter-bar">
+      <input type="text" id="filter-search" placeholder="🔍 Ara..." />
+      <select id="filter-category">
+        <option value="">Tüm kategoriler</option>
+      </select>
+      <select id="filter-status">
+        <option value="">Tüm durumlar</option>
+        <option value="paid">Ödendi</option>
+        <option value="pending">Bekliyor</option>
+      </select>
+    </div>
+    <div id="expense-list"></div>
+  </div>
+
+  <div class="panel" id="panel-ekle">
+    <div class="form-card">
+      <div class="form-row">
+        <label>Başlık *</label>
+        <input type="text" id="input-title" placeholder="Örn: AFE Mobilya peşin" />
+      </div>
+      <div class="form-row">
+        <label>Tutar (₺) *</label>
+        <input type="number" id="input-amount" placeholder="60000" step="0.01" inputmode="decimal" />
+      </div>
+      <div class="form-row">
+        <label>Kategori</label>
+        <select id="input-category">
+          <option value="mobilya">🪑 Mobilya (AFE)</option>
+          <option value="elektrik">⚡ Elektrik</option>
+          <option value="boya">🎨 Boya / İşçilik</option>
+          <option value="kira">🔑 Kira</option>
+          <option value="vergi">📑 Vergi / SMMM</option>
+          <option value="pos">💻 POS / Bilgisayar</option>
+          <option value="kamera">📷 Kamera / Güvenlik</option>
+          <option value="reklam">📣 Reklam / Tabela</option>
+          <option value="dekor">✨ Dekor / Berjer</option>
+          <option value="stok">💎 Stok / Ürün</option>
+          <option value="diger">📦 Diğer</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Durum</label>
+        <select id="input-status">
+          <option value="paid">✅ Ödendi</option>
+          <option value="pending">⏳ Bekliyor</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Tarih</label>
+        <input type="date" id="input-date" />
+      </div>
+      <div class="form-row">
+        <label>Not (opsiyonel)</label>
+        <textarea id="input-note" rows="2" placeholder="Banka açıklaması, iletişim..."></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" id="save-btn">Kaydet</button>
+        <button class="btn btn-secondary" id="cancel-btn">Temizle</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-ozet">
+    <div id="category-summary"></div>
+  </div>
+
+  <div class="panel" id="panel-ayar">
+    <div class="form-card">
+      <div class="form-row">
+        <label>Can simidi tutarı (₺)</label>
+        <input type="number" id="budget-input" value="450000" inputmode="decimal" />
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" id="save-budget">Bütçeyi güncelle</button>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">📁 Veri yönetimi</div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="export-btn">⬇️ Yedek al</button>
+        <button class="btn btn-secondary" id="import-btn">⬆️ İçe aktar</button>
+        <button class="btn btn-danger" id="reset-btn">🗑️ Tümünü sil</button>
+      </div>
+      <input type="file" id="import-file" accept=".json" style="display: none;" />
+    </div>
+
+    <div class="footer-info">
+      <strong style="color: #993556;">Vaoow Takı Bijuteri</strong><br>
+      VKN: 9620509196 · Ulus VD<br>
+      Bener Çarşısı Kardelen Mah. 2067 Cad. No:10/S D:20<br>
+      Yenimahalle/Ankara · Kira: 30.000 ₺/ay<br>
+      Açılış hedef: 15-20 Haziran 2026
+    </div>
+  </div>
+</div>
+
+<!-- Düzenleme Modal -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">✏️ Kaydı düzenle</div>
+      <button class="modal-close" id="close-modal">×</button>
+    </div>
+    <div class="form-row">
+      <label>Başlık</label>
+      <input type="text" id="edit-title" />
+    </div>
+    <div class="form-row">
+      <label>Tutar (₺)</label>
+      <input type="number" id="edit-amount" step="0.01" inputmode="decimal" />
+    </div>
+    <div class="form-row">
+      <label>Kategori</label>
+      <select id="edit-category"></select>
+    </div>
+    <div class="form-row">
+      <label>Durum</label>
+      <select id="edit-status">
+        <option value="paid">✅ Ödendi</option>
+        <option value="pending">⏳ Bekliyor</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Tarih</label>
+      <input type="date" id="edit-date" />
+    </div>
+    <div class="form-row">
+      <label>Not</label>
+      <textarea id="edit-note" rows="2"></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" id="update-btn">Güncelle</button>
+      <button class="btn btn-secondary" id="cancel-edit">İptal</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'vaoow_expenses_v2';
+  const BUDGET_KEY = 'vaoow_budget_v2';
+
+  const CATEGORY_LABELS = {
+    mobilya: '🪑 Mobilya',
+    elektrik: '⚡ Elektrik',
+    boya: '🎨 Boya/İşçilik',
+    kira: '🔑 Kira',
+    vergi: '📑 Vergi/SMMM',
+    pos: '💻 POS/PC',
+    kamera: '📷 Kamera',
+    reklam: '📣 Reklam',
+    dekor: '✨ Dekor',
+    stok: '💎 Stok',
+    diger: '📦 Diğer'
+  };
+
+  let expenses = [];
+  let budget = 450000;
+  let editingId = null;
+
+  function formatMoney(n) {
+    return new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(Math.round(n)) + ' ₺';
+  }
+
+  function formatDate(d) {
+    if (!d) return '';
+    const date = new Date(d);
+    return date.toLocaleDateString('tr-TR', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  function uid() {
+    return 'exp_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  // Storage - localStorage kullanıyor
+  function loadData() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEY);
+      if (data) expenses = JSON.parse(data);
+    } catch (e) { expenses = []; }
+    try {
+      const b = localStorage.getItem(BUDGET_KEY);
+      if (b) budget = parseFloat(b);
+    } catch (e) { budget = 450000; }
+  }
+
+  function saveExpenses() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(expenses));
+      updateLastUpdate();
+    } catch (e) { console.error(e); }
+  }
+
+  function saveBudget() {
+    try { localStorage.setItem(BUDGET_KEY, String(budget)); } catch (e) {}
+  }
+
+  function updateLastUpdate() {
+    const el = document.getElementById('last-update');
+    if (el) el.textContent = 'Güncel: ' + new Date().toLocaleString('tr-TR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' · ' + expenses.length + ' kayıt';
+  }
+
+  function getTotals() {
+    let paid = 0, pending = 0;
+    expenses.forEach(e => {
+      const amount = parseFloat(e.amount) || 0;
+      if (e.status === 'paid') paid += amount;
+      else pending += amount;
+    });
+    return { paid, pending, buffer: budget - paid - pending };
+  }
+
+  function getCategoryTotals() {
+    const cats = {};
+    expenses.forEach(e => {
+      if (!cats[e.category]) cats[e.category] = { paid: 0, pending: 0, count: 0 };
+      const amount = parseFloat(e.amount) || 0;
+      if (e.status === 'paid') cats[e.category].paid += amount;
+      else cats[e.category].pending += amount;
+      cats[e.category].count += 1;
+    });
+    return cats;
+  }
+
+  function renderStats() {
+    const { paid, pending, buffer } = getTotals();
+    document.getElementById('stat-budget').textContent = formatMoney(budget);
+    document.getElementById('stat-spent').textContent = formatMoney(paid);
+    document.getElementById('stat-pending').textContent = formatMoney(pending);
+    const bufferEl = document.getElementById('stat-buffer');
+    bufferEl.textContent = formatMoney(buffer);
+    bufferEl.className = 'stat-value ' + (buffer < 0 ? 'danger' : buffer < 50000 ? 'warning' : 'success');
+
+    const warnArea = document.getElementById('warning-area');
+    if (buffer < 0) {
+      warnArea.innerHTML = '<div class="warning"><strong>⚠️ Tampon eksi!</strong> Bütçe ' + formatMoney(Math.abs(buffer)) + ' aşıldı. Bağkur kredisi şart.</div>';
+    } else if (buffer < 50000) {
+      warnArea.innerHTML = '<div class="warning"><strong>⚠️ Tampon dar.</strong> Sadece ' + formatMoney(buffer) + ' kaldı. Kredi planı acil.</div>';
+    } else if (buffer < 100000) {
+      warnArea.innerHTML = '<div class="info"><strong>ℹ️ Tampon orta.</strong> Yaklaşık ' + Math.round(buffer / 30000) + ' ay nefes alma.</div>';
+    } else {
+      warnArea.innerHTML = '';
+    }
+  }
+
+  function escapeHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function renderList() {
+    const list = document.getElementById('expense-list');
+    const catFilter = document.getElementById('filter-category').value;
+    const statusFilter = document.getElementById('filter-status').value;
+    const searchText = document.getElementById('filter-search').value.toLowerCase().trim();
+
+    let filtered = expenses.slice();
+    if (catFilter) filtered = filtered.filter(e => e.category === catFilter);
+    if (statusFilter) filtered = filtered.filter(e => e.status === statusFilter);
+    if (searchText) filtered = filtered.filter(e => 
+      (e.title && e.title.toLowerCase().includes(searchText)) ||
+      (e.note && e.note.toLowerCase().includes(searchText))
+    );
+
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.date || 0).getTime();
+      const dateB = new Date(b.date || 0).getTime();
+      if (dateB !== dateA) return dateB - dateA;
+      return b.id.localeCompare(a.id);
+    });
+
+    if (filtered.length === 0) {
+      list.innerHTML = '<div class="empty-state"><div class="emoji">📭</div>' + (expenses.length === 0 ? 'Henüz harcama eklenmedi.<br>"Ekle" sekmesinden başla.' : 'Bu filtreye uygun kayıt yok.') + '</div>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(e => {
+      const catLabel = CATEGORY_LABELS[e.category] || '📦 Diğer';
+      const statusBadge = e.status === 'paid' ? 
+        '<span class="pill pill-paid">✅ ÖDENDİ</span>' : 
+        '<span class="pill pill-pending">⏳ BEKLİYOR</span>';
+      return `
+        <div class="expense-card ${e.status}">
+          <div class="expense-top">
+            <div class="expense-title">${escapeHtml(e.title)}</div>
+            <div class="expense-amount">${formatMoney(e.amount)}</div>
+          </div>
+          <div class="expense-meta">
+            <span class="pill pill-${e.category}">${catLabel}</span>
+            ${statusBadge}
+            ${e.date ? '<span>📅 ' + formatDate(e.date) + '</span>' : ''}
+          </div>
+          ${e.note ? '<div class="expense-note">' + escapeHtml(e.note) + '</div>' : ''}
+          <div class="expense-actions">
+            <button class="icon-btn ${e.status === 'paid' ? '' : 'success'}" data-toggle="${e.id}">
+              ${e.status === 'paid' ? '⏳ Bekletmeye al' : '✅ Ödendi yap'}
+            </button>
+            <button class="icon-btn" data-edit="${e.id}">✏️ Düzenle</button>
+            <button class="icon-btn danger" data-delete="${e.id}">🗑️ Sil</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    list.querySelectorAll('[data-delete]').forEach(btn => {
+      btn.addEventListener('click', () => deleteExpense(btn.dataset.delete));
+    });
+    list.querySelectorAll('[data-toggle]').forEach(btn => {
+      btn.addEventListener('click', () => toggleStatus(btn.dataset.toggle));
+    });
+    list.querySelectorAll('[data-edit]').forEach(btn => {
+      btn.addEventListener('click', () => openEditModal(btn.dataset.edit));
+    });
+  }
+
+  function renderCategorySummary() {
+    const container = document.getElementById('category-summary');
+    const cats = getCategoryTotals();
+    const totals = getTotals();
+    const totalSpent = totals.paid + totals.pending;
+
+    const catEntries = Object.entries(cats).sort((a, b) => (b[1].paid + b[1].pending) - (a[1].paid + a[1].pending));
+
+    if (catEntries.length === 0) {
+      container.innerHTML = '<div class="empty-state"><div class="emoji">📊</div>Henüz veri yok.</div>';
+      return;
+    }
+
+    container.innerHTML = catEntries.map(([cat, data]) => {
+      const total = data.paid + data.pending;
+      const percent = totalSpent > 0 ? Math.round((total / totalSpent) * 100) : 0;
+      const label = CATEGORY_LABELS[cat] || cat;
+      return `
+        <div class="category-card">
+          <div class="category-header">
+            <div class="category-name">${label}</div>
+            <div class="category-total">${formatMoney(total)}</div>
+          </div>
+          <div class="category-detail">
+            <span>✅ Ödendi</span>
+            <strong>${formatMoney(data.paid)}</strong>
+          </div>
+          <div class="category-detail">
+            <span>⏳ Bekleyen</span>
+            <strong>${formatMoney(data.pending)}</strong>
+          </div>
+          <div class="category-detail">
+            <span>📊 Kayıt sayısı</span>
+            <strong>${data.count}</strong>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width: ${percent}%"></div></div>
+          <div style="text-align: right; font-size: 11px; color: #888780; margin-top: 4px;">%${percent} toplam içinde</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderCategoryFilter() {
+    const select = document.getElementById('filter-category');
+    const currentValue = select.value;
+    select.innerHTML = '<option value="">Tüm kategoriler</option>' + 
+      Object.entries(CATEGORY_LABELS).map(([key, label]) => 
+        `<option value="${key}">${label}</option>`
+      ).join('');
+    select.value = currentValue;
+
+    const editSelect = document.getElementById('edit-category');
+    editSelect.innerHTML = Object.entries(CATEGORY_LABELS).map(([key, label]) => 
+      `<option value="${key}">${label}</option>`
+    ).join('');
+  }
+
+  function renderAll() {
+    renderStats();
+    renderList();
+    renderCategorySummary();
+  }
+
+  function addExpense() {
+    const title = document.getElementById('input-title').value.trim();
+    const amount = parseFloat(document.getElementById('input-amount').value);
+    const category = document.getElementById('input-category').value;
+    const status = document.getElementById('input-status').value;
+    const date = document.getElementById('input-date').value;
+    const note = document.getElementById('input-note').value.trim();
+
+    if (!title) { showToast('⚠️ Başlık zorunlu'); return; }
+    if (isNaN(amount) || amount <= 0) { showToast('⚠️ Geçerli tutar gir'); return; }
+
+    expenses.push({
+      id: uid(),
+      title, amount, category, status, date, note,
+      created: new Date().toISOString()
+    });
+
+    saveExpenses();
+    clearForm();
+    switchTab('liste');
+    renderAll();
+    showToast('✅ Eklendi');
+  }
+
+  function clearForm() {
+    document.getElementById('input-title').value = '';
+    document.getElementById('input-amount').value = '';
+    document.getElementById('input-note').value = '';
+    document.getElementById('input-date').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('input-category').value = 'mobilya';
+    document.getElementById('input-status').value = 'paid';
+  }
+
+  function deleteExpense(id) {
+    const exp = expenses.find(e => e.id === id);
+    if (!exp) return;
+    if (!confirm('Bu kaydı silmek istediğine emin misin?\n\n"' + exp.title + '" silinecek.')) return;
+    expenses = expenses.filter(e => e.id !== id);
+    saveExpenses();
+    renderAll();
+    showToast('🗑️ Silindi');
+  }
+
+  function toggleStatus(id) {
+    const e = expenses.find(x => x.id === id);
+    if (!e) return;
+    e.status = e.status === 'paid' ? 'pending' : 'paid';
+    saveExpenses();
+    renderAll();
+    showToast(e.status === 'paid' ? '✅ Ödendi olarak işaretlendi' : '⏳ Bekleyen olarak işaretlendi');
+  }
+
+  function openEditModal(id) {
+    const e = expenses.find(x => x.id === id);
+    if (!e) return;
+    editingId = id;
+    document.getElementById('edit-title').value = e.title || '';
+    document.getElementById('edit-amount').value = e.amount || '';
+    document.getElementById('edit-category').value = e.category || 'diger';
+    document.getElementById('edit-status').value = e.status || 'paid';
+    document.getElementById('edit-date').value = e.date || '';
+    document.getElementById('edit-note').value = e.note || '';
+    document.getElementById('edit-modal').classList.add('active');
+  }
+
+  function closeEditModal() {
+    document.getElementById('edit-modal').classList.remove('active');
+    editingId = null;
+  }
+
+  function updateExpense() {
+    if (!editingId) return;
+    const e = expenses.find(x => x.id === editingId);
+    if (!e) return;
+
+    const title = document.getElementById('edit-title').value.trim();
+    const amount = parseFloat(document.getElementById('edit-amount').value);
+    if (!title) { showToast('⚠️ Başlık zorunlu'); return; }
+    if (isNaN(amount) || amount <= 0) { showToast('⚠️ Geçerli tutar gir'); return; }
+
+    e.title = title;
+    e.amount = amount;
+    e.category = document.getElementById('edit-category').value;
+    e.status = document.getElementById('edit-status').value;
+    e.date = document.getElementById('edit-date').value;
+    e.note = document.getElementById('edit-note').value.trim();
+
+    saveExpenses();
+    closeEditModal();
+    renderAll();
+    showToast('✅ Güncellendi');
+  }
+
+  function switchTab(tabName) {
+    document.querySelectorAll('.tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.tab === tabName);
+    });
+    document.querySelectorAll('.panel').forEach(p => {
+      p.classList.toggle('active', p.id === 'panel-' + tabName);
+    });
+  }
+
+  function exportData() {
+    const data = {
+      version: 2,
+      app: 'Vaoow Bütçe',
+      exported: new Date().toISOString(),
+      budget: budget,
+      expenses: expenses
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'vaoow_butce_' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('⬇️ Yedek indirildi');
+  }
+
+  function importData(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (data.expenses && Array.isArray(data.expenses)) {
+          const merge = confirm('Mevcut verilerle birleştirilsin mi?\n\nTAMAM = birleştir\nİPTAL = mevcut silinir, sadece dosyadakiler kalır');
+          if (merge) {
+            expenses = expenses.concat(data.expenses);
+          } else {
+            expenses = data.expenses;
+          }
+          if (data.budget) {
+            budget = data.budget;
+            document.getElementById('budget-input').value = budget;
+          }
+          saveExpenses();
+          saveBudget();
+          renderAll();
+          showToast('⬆️ İçe aktarıldı');
+        } else {
+          showToast('⚠️ Geçersiz dosya');
+        }
+      } catch (err) {
+        showToast('⚠️ Dosya okunamadı');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // Event listeners
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => switchTab(t.dataset.tab));
+  });
+  document.getElementById('save-btn').addEventListener('click', addExpense);
+  document.getElementById('cancel-btn').addEventListener('click', clearForm);
+  document.getElementById('filter-category').addEventListener('change', renderList);
+  document.getElementById('filter-status').addEventListener('change', renderList);
+  document.getElementById('filter-search').addEventListener('input', renderList);
+  document.getElementById('save-budget').addEventListener('click', () => {
+    const val = parseFloat(document.getElementById('budget-input').value);
+    if (!isNaN(val) && val > 0) {
+      budget = val;
+      saveBudget();
+      renderStats();
+      showToast('✅ Bütçe güncellendi');
+    } else {
+      showToast('⚠️ Geçerli rakam gir');
+    }
+  });
+  document.getElementById('export-btn').addEventListener('click', exportData);
+  document.getElementById('import-btn').addEventListener('click', () => {
+    document.getElementById('import-file').click();
+  });
+  document.getElementById('import-file').addEventListener('change', (e) => {
+    if (e.target.files[0]) importData(e.target.files[0]);
+    e.target.value = '';
+  });
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    if (confirm('TÜM kayıtlar silinecek! Emin misin?')) {
+      if (confirm('SON UYARI: Geri alınamaz! Devam edilsin mi?')) {
+        expenses = [];
+        saveExpenses();
+        renderAll();
+        showToast('🗑️ Tümü silindi');
+      }
+    }
+  });
+  document.getElementById('close-modal').addEventListener('click', closeEditModal);
+  document.getElementById('cancel-edit').addEventListener('click', closeEditModal);
+  document.getElementById('update-btn').addEventListener('click', updateExpense);
+  document.getElementById('edit-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'edit-modal') closeEditModal();
+  });
+
+  // Init
+  loadData();
+  renderCategoryFilter();
+  document.getElementById('budget-input').value = budget;
+  document.getElementById('input-date').value = new Date().toISOString().slice(0, 10);
+
+  // Hazır veri yükle (sadece ilk açılışta)
+  if (expenses.length === 0) {
+    const presets = [
+      { title: 'AFE Mobilya peşin', amount: 60000, category: 'mobilya', status: 'pending', date: '2026-05-25', note: 'Pazartesi ödenecek. IBAN: TR60 0006 4000 0014 2910 3404 16' },
+      { title: 'AFE Mobilya final', amount: 170000, category: 'mobilya', status: 'pending', date: '2026-05-30', note: 'Kurban Bayramı sonrası teslim+montaj' },
+      { title: 'Boya + Elektrik işçilik 1.ödeme', amount: 13000, category: 'boya', status: 'paid', date: '2026-05-17', note: 'İlk ara ödeme - malzeme avansı' },
+      { title: 'Boya + Elektrik işçilik 2.ödeme', amount: 30000, category: 'boya', status: 'paid', date: '2026-05-22', note: 'İş bitimi - anahtar teslim 43K tamam' },
+      { title: 'Dündar elektrik fatura', amount: 6692, category: 'elektrik', status: 'paid', date: '2026-05-16', note: '25 Noas ray spot + 16m ray + 40m kablo' },
+      { title: 'Pazar acil 3m ray', amount: 460, category: 'elektrik', status: 'paid', date: '2026-05-18', note: 'Dündar yanlış marka hatası nedeniyle' },
+      { title: 'ACK 36W gömme spot × 14', amount: 5292, category: 'elektrik', status: 'paid', date: '2026-05-19', note: '12 takılı + 2 yedek, 4000K, 3 yıl garanti' },
+      { title: 'Elektrik abonelik depozito', amount: 3700, category: 'elektrik', status: 'paid', date: '2026-05-22', note: 'Kira bitiminde iade alınır' },
+      { title: 'Tavan plakası (Bauhaus)', amount: 3600, category: 'boya', status: 'pending', date: '2026-05-24', note: '15-20 plaka için' },
+      { title: 'SMMM Vedat Bey açılış', amount: 3500, category: 'vergi', status: 'paid', date: '2026-05-01', note: 'Aylık 3.570 TL devam edecek' },
+      { title: 'Kira Mayıs', amount: 30000, category: 'kira', status: 'pending', date: '2026-05-01', note: 'Aylık 30K kira ödemesi' },
+      { title: 'Kamera sistemi (J-Tech 4 adet)', amount: 19000, category: 'kamera', status: 'pending', date: '2026-06-10', note: '4 IP + 8 kanal NVR + 2TB SkyHawk + montaj' },
+      { title: 'POS + PC sistemi', amount: 26000, category: 'pos', status: 'pending', date: '2026-06-10', note: 'Dell 7060 + TSC TE200 + Honeywell + Beko X30TR' },
+      { title: 'Reklam (cam folyosu + LED tabela)', amount: 25000, category: 'reklam', status: 'pending', date: '2026-06-05', note: 'Vitrin + dış tabela' },
+      { title: 'Berjer + sehpa', amount: 18000, category: 'dekor', status: 'pending', date: '2026-06-10', note: 'Müşteri oturma alanı' }
+    ];
+    presets.forEach(p => {
+      expenses.push({ id: uid(), ...p, created: new Date().toISOString() });
+    });
+    saveExpenses();
+  }
+
+  renderAll();
+  updateLastUpdate();
+})();
+</script>
+</body>
+</html>
